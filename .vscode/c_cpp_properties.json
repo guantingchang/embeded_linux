@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/share/samba/mp157_linux/embed_linux/embed_linux/sources/linux/linux-stm32mp-5.4.31-r0/linux-5.4.31/arch/arm/include",
+                "/home/share/samba/mp157_linux/embed_linux/embed_linux/sources/linux/linux-stm32mp-5.4.31-r0/linux-5.4.31/include",
+                "/home/share/samba/mp157_linux/embed_linux/embed_linux/sources/linux/linux-stm32mp-5.4.31-r0/linux-5.4.31/arch/arm/include/generated",
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
