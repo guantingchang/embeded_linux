@@ -14,3 +14,7 @@ tools/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz filter=lfs diff
 tools/jdk-8u291-linux-x64.tar.gz filter=lfs diff=lfs merge=lfs -text
 tools/jre-8u271-linux-x64.tar.gz filter=lfs diff=lfs merge=lfs -text
 tar/en.SOURCES-stm32mp1-openstlinux-5-4-dunfell-mp1-20-06-24.tar.xz filter=lfs diff=lfs merge=lfs -text
+doc/datasheet filter=lfs diff=lfs merge=lfs -text
+doc/sch filter=lfs diff=lfs merge=lfs -text
+doc/tutorials filter=lfs diff=lfs merge=lfs -text
+doc/user_manual filter=lfs diff=lfs merge=lfs -text
