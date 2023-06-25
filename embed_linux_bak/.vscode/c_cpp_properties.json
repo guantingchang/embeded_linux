@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/share/samba/embed_linux/embeded_linux/sources/linux/alientek_linux/arch/arm/include",
+                "/home/share/samba/embed_linux/embeded_linux/sources/linux/alientek_linux/include",
+                "/home/share/samba/embed_linux/embeded_linux/sources/linux/alientek_linux/arch/arm/include/generated",
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
