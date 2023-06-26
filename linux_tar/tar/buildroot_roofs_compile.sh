@@ -37,7 +37,7 @@ compile_linux_bildroot_source(){
 cp_linux_buildroot_images(){
 	if [ -d  ${BUILDROOT_BUILD_PATH} ];then	
 		cd ${BUILDROOT_BUILD_PATH}/../
-		mv rootfs rootfs_bak
+		mv rootfs rootfs_bak2
 	fi
 	
 	mkdir -p ${BUILDROOT_BUILD_PATH}
