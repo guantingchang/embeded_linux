@@ -26,7 +26,7 @@ END_COLOR='\E[0m'
 
 
 # 链接库文件所在的路劲
-readonly LIB_PATH='/home/book/100ask_imx6ull-sdk/ToolChain/gcc-linaro-6.2.1-2016.11-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/lib/'
+readonly LIB_PATH='/home/share/samba/mp157_linux/alientek/tools/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc/lib/'
 
 # rootfs顶层目录
 mkdir ./rootfs
