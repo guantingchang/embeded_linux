@@ -1,7 +1,0 @@
-{
-	"git.ignoreLimitWarning": true,
-	"files.associations": {
-		"complex": "c",
-		"fcntl.h": "c"
-	}
-}
