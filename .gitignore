@@ -54,5 +54,5 @@ tf-a-stm32mp-2.2.r1-gaa9f87c-v1.5.tar.bz2git
 /stm32mp1-openstlinux-5.4-dunfell-mp1-20-06-24
 /linux_tar/tar/*.tar.xz
 /linux_tar/tar/*.tar.bz2
-/linux/tools/*.tar.xz
-/linux/tools/*.zip
+/linux_tar/tools/*.tar.xz
+/linux_tar/tools/*.zip
