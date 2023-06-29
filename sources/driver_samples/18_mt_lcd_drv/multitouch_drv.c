@@ -131,3 +131,101 @@ out:
 	return IRQ_HANDLED;
 }
 
+static int edt_ft5426_ts_irq(struct edt_ft5426_dev *ft5426)
+{
+	struct i2c_client *client = ft5426->client;
+	int ret;
+
+	ft5426->irq_gpio = of_get_named_gpio(client->dev.of_node, "irq-gpios", 0);
+	if(gpio_is_valid(ft5426->irq_gpio)==0){
+		dev_err(&client->dev, "Failed to get ts interrupt gpio\n");
+		return ft5426->irq_gpio;
+	}
+	ret = devm_gpio_request_one(&client->dev, gpio_to_irq(ft5426->irq_gpio), NULL, edt_ft5426_ts_isr, IRQF_TRIGGER_FALLING| IRQF_ONESHOT, client->name, ft5426);
+	if(ret!=0){
+		dev_err(&client->dev, "Failed to request touchscreen irq.\n");
+		return ret;
+	}
+	return 0;
+}
+
+static int edt_ft5426_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
+{
+	struct edt_ft5426_dev *ft5426;
+	struct input_dev *input;
+	u8 data;
+	int ret;
+
+	ft5426 = devm_kzalloc(&client->dev, sizeof(struct edt_ft5426_dev), GFP_KERNEL);
+	if(ft5426 == NULL){
+		dev_err(&client->dev, "Failed to allocate ft5426 driver data.\n");
+		return -ENOMEM;
+	}
+
+	ft5426->client = client;
+	ret = edt_ft5426_ts_reset(ft5426);
+	if(ret !=0){
+		return ret;
+	}
+	msleep(50);
+	data = 0;
+	edt_ft5426_ts_write(ft5426, FT5426_DEVICE_MODE_REG, &data, 1);
+	data = 1;
+	edt_ft5426_ts_write(ft5426, FT5426_ID_G_MODE_REG, &data,1);
+
+	ret = edt_ft5426_ts_irq(ft5426);
+	if(ret !=0){
+		return ret;
+	}
+
+	intput = devm_input_allocate_device(&client->dev);
+	if(input ==0){
+		dev_err(&client->dev, "Failed to allocate input device.\n");
+		return -ENOMEM;
+	}
+	ft5426->input = input;
+	input->name = "foclatech ft5426 touchscreen";
+	input->id.bustype = BUS_I2C;
+	input_set_abs_params(input, ABS_MT_POSITION_X, 0, 1024, 0,0);
+	input_set_abs_params(input, ABS_MT_POSITION_Y, 0, 600, 0,0);
+	ret = input_mt_init_slots(input, MAX_SUPPORT_POINTS, INPUT_MT_DIRECT);
+	if(ret){
+		dev_err(&client->dev, "Failed to init mt slots.\n");
+		return ret;
+	}
+
+	ret = input_register_device(input);
+	if(ret!=0){
+		return ret;
+	}
+	i2c_set_clientdata(client, ft5426);
+	return 0;
+}
+
+static  int edt_ft5426_ts_remove(struct i2c_client *client)
+{
+	struct edt_ft5426_dev *ft5426 = i2c_get_clientdata(client);
+	input_unregister_device(ft5426->input);
+	return 0;
+}
+
+static const struct of_device_id edt_ft5426_of_match[]={
+	{.compatible = "edt, edt-ft5426",},
+	{/* sentinel */},
+};
+
+static struct i2c_driver edt_ft5426_ts_driver = {
+	.driver ={
+		.owner = THIS_MODULE,
+		.name = "edt_ft5426",
+		.of_match_table = of_match_ptr(edt_ft5426_of_match),
+	},
+	.probe = edt_ft5426_ts_probe,
+	.remove = edt_ft5426_ts_remove,
+};
+
+module_i2c_driver(edt_ft5426_ts_driver);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("GTC");
+MODULE_INFO(intree, "Y");
