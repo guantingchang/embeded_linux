@@ -52,9 +52,7 @@ Mkfile.old
 dkms.conf
 tf-a-stm32mp-2.2.r1-gaa9f87c-v1.5.tar.bz2git 
 /stm32mp1-openstlinux-5.4-dunfell-mp1-20-06-24
-/linux_tar/tar/en.SOURCES-stm32mp1-openstlinux-5-4-dunfell-mp1-20-06-24.tar.xz
-/linux_tar/tar/tf-a-stm32mp-2.2.r1-gaa9f87c-v1.5.tar.bz2
-/linux_tar/tar/u-boot-stm32mp-2020.01-g9c0df34f-v1.5.tar.bz2
-/linux_tar/tar/linux-5.4.31-g8c3068500-v1.8.tar.bz2
-/tools
-
+/linux_tar/tar/*.tar.xz
+/linux_tar/tar/*.tar.bz2
+/linux/tools/*.tar.xz
+/linux/tools/*.zip
