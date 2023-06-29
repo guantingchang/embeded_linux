@@ -1,13 +1,17 @@
 
 #! /bin/sh
 
+set -e
+cd `dirname $0`
+
 APP_PATH=$(pwd)
 echo APP_PATH=$APP_PATH
 BUILDROOT_SOURCE_PATH=${APP_PATH}/../../sources/rootfs/buildroot
-BUILDROOT_BUILD_PATH=${APP_PATH}/../../images/rootfs
+BUILDROOT_BUILD_PATH=${APP_PATH}/../../images/rootfs/buildroot
 
 # 链接库文件所在的路劲
-readonly LIB_PATH='/home/share/samba/mp157_linux/alientek/tools/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc/lib/'
+readonly LIB_PATH=$(pwd)/../tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc/lib/
+echo LIB_PATH=$LIB_PATH
 echo BUILDROOT_BUILD_PATH = $BUILDROOT_BUILD_PATH
 
 
@@ -37,7 +41,7 @@ compile_linux_bildroot_source(){
 cp_linux_buildroot_images(){
 	if [ -d  ${BUILDROOT_BUILD_PATH} ];then	
 		cd ${BUILDROOT_BUILD_PATH}/../
-		mv rootfs rootfs_bak2
+		mv buildroot buildroot_bak2
 	fi
 	
 	mkdir -p ${BUILDROOT_BUILD_PATH}
@@ -67,6 +71,8 @@ EOF
 		
 	sudo   chmod  +x  ${BUILDROOT_BUILD_PATH}/etc/init.d/Sautorun
 	# 创建PS1环境变量
+	sudo mkdir -p ${BUILDROOT_BUILD_PATH}/etc/profile.d
+	sudo chmod  777 -R ${BUILDROOT_BUILD_PATH}/etc/profile.d
 	sudo cat > ${BUILDROOT_BUILD_PATH}/etc/profile.d/myprofile.sh << "EOF"
 #!/bin/sh
 #This file is /etc/profile.d

@@ -1,6 +1,9 @@
 
 #! /bin/sh
 
+set -e
+cd `dirname $0`
+
 APP_PATH=$(pwd)
 echo APP_PATH=$APP_PATH
 LINUX_KERNEL_SOURCE_PATH=${APP_PATH}/../../sources/linux/alientek_linux

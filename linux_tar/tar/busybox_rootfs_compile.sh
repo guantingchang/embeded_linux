@@ -1,13 +1,16 @@
 
 #! /bin/sh
 
+set -e
+cd `dirname $0`
+
 APP_PATH=$(pwd)
 echo APP_PATH=$APP_PATH
 BUSYBOX_SOURCE_PATH=${APP_PATH}/../../sources/rootfs/busybox
-BUSYBOX_BUILD_PATH=${APP_PATH}/../../images/rootfs
+BUSYBOX_BUILD_PATH=${APP_PATH}/../../images/rootfs/busybox
 
 # 链接库文件所在的路劲
-readonly LIB_PATH='/home/share/samba/mp157_linux/alientek/tools/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc/lib/'
+readonly LIB_PATH=$(pwd)/../tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc/lib/
 echo BUSYBOX_SOURCE_PATH = $BUSYBOX_SOURCE_PATH
 
 
@@ -22,9 +25,10 @@ compile_linux_busybox_source(){
 	cd ${BUSYBOX_SOURCE_PATH}/busybox-1.32.0/
 	echo $(pwd)
 	#make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- distclean
-	make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- stm32mp1_atk_defconfig
+	#make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- stm32mp1_atk_defconfig
 	make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- menuconfig
 	make V=1 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- -j8
+	echo "--------------------------------------------------"
 	make install CONFIG_PREFIX=${BUSYBOX_BUILD_PATH}
 }
 
@@ -39,6 +43,7 @@ compile_linux_busybox_source(){
 #   None
 #######################################
 populate_config_file(){
+	sudo chmod 777 -R ${BUSYBOX_BUILD_PATH}
 	# 创建文件 /etc/inittab 为 init 进程的配置文件
 	sudo cat > ${BUSYBOX_BUILD_PATH}/etc/inittab << "EOF"
 # /etc/inittab
