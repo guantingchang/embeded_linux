@@ -170,7 +170,7 @@ CROSS_COMPILE := $(subst CONFIG_CROSS_COMPILER_PREFIX=,,$(CROSS_COMPILE))
 CROSS_COMPILE := $(subst ",,$(CROSS_COMPILE))
 #")
 endif
-
+CROSS_COMPILE := /home/share/samba/Tuya_hardware/wirless_ci/embed_linux/embeded_linux/linux_tar/tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
 # SUBARCH tells the usermode build what the underlying arch is.  That is set
 # first, and if a usermode build is happening, the "ARCH=um" on the command
 # line overrides the setting of ARCH below.  If a native build is happening,
