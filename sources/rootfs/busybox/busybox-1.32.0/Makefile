@@ -161,7 +161,6 @@ export srctree objtree VPATH TOPDIR
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 
-CROSS_COMPILE =/home/share/samba/Tuya_hardware/wirless_ci/embed_linux/embeded_linux/linux_tar/tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
 # bbox: we may have CONFIG_CROSS_COMPILER_PREFIX in .config,
 # and it has not been included yet... thus using an awkward syntax.
 ifeq ($(CROSS_COMPILE),)
@@ -170,7 +169,9 @@ CROSS_COMPILE := $(subst CONFIG_CROSS_COMPILER_PREFIX=,,$(CROSS_COMPILE))
 CROSS_COMPILE := $(subst ",,$(CROSS_COMPILE))
 #")
 endif
-CROSS_COMPILE := /home/share/samba/Tuya_hardware/wirless_ci/embed_linux/embeded_linux/linux_tar/tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))  #获取当前正在执行的makefile的绝对路径
+CROSS_COMPILE = $(addprefix $(dir $(mkfile_path))/../../../../linux_tar/tools/compile_tool/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/, arm-none-linux-gnueabihf-)
+
 # SUBARCH tells the usermode build what the underlying arch is.  That is set
 # first, and if a usermode build is happening, the "ARCH=um" on the command
 # line overrides the setting of ARCH below.  If a native build is happening,
