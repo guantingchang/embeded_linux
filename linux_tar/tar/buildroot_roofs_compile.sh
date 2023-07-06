@@ -27,9 +27,9 @@ compile_linux_bildroot_source(){
 	echo $(pwd)
 	#make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- distclean
 	if [ ! -f  stm32mp1_atk_defconfig ];then
-		echo "menuconfig"
-		make menuconfig
-		sudo make make FORCE_UNSAFE_CONFIGURE=1
+		echo "menuconfig"		
+		make menuconfig		
+		sudo make FORCE_UNSAFE_CONFIGURE=1
 	else
 		echo "atk_defconfig"
 		#make stm32mp1_atk_defconfig
@@ -38,10 +38,19 @@ compile_linux_bildroot_source(){
 	fi 
 }
 
+compile_linux_busybox_source(){
+	echo "alientek linux busybox compile" 
+	cd ${BUILDROOT_SOURCE_PATH}/buildroot-2020.02.6/
+	echo $(pwd)
+	sudo make busybox-menuconfig
+	sudo make show-targets
+	sudo make busybox
+}
+
 cp_linux_buildroot_images(){
 	if [ -d  ${BUILDROOT_BUILD_PATH} ];then	
 		cd ${BUILDROOT_BUILD_PATH}/../
-		mv buildroot buildroot_bak2
+		sudo rm -rf  buildroot 
 	fi
 	
 	mkdir -p ${BUILDROOT_BUILD_PATH}
@@ -60,6 +69,9 @@ cp_linux_buildroot_images(){
 #   None
 #######################################
 populate_config_file(){
+	echo "================================"
+	echo $(pwd)
+	sudo mkdir -p $(pwd)/lib/modules/5.4.31
 	# 创建 /etc/init.d/rcS 文件并初始化
 	sudo cat > ${BUILDROOT_BUILD_PATH}/etc/init.d/Sautorun << "EOF"
 #!/bin/sh
@@ -109,6 +121,7 @@ create_rootfs_ext4(){
 	mkfs.ext4 -L rootfs rootfs.ext4
 	fi
 }
+compile_linux_busybox_source
 compile_linux_bildroot_source
 cp_linux_buildroot_images
 buildroot_create_dir_and_files
