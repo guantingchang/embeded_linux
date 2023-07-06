@@ -57,3 +57,4 @@ tf-a-stm32mp-2.2.r1-gaa9f87c-v1.5.tar.bz2git
 /linux_tar/tools/*.tar.xz
 /linux_tar/tools/*.zip
 /linux_tar/tools/compile_tool/*
+/images/rootfs/*
