@@ -2731,7 +2731,7 @@ endif
 ifneq "$(HOSTARCH)" "x86_64"
 /home/share/samba/embed_linux/embeded_linux/sources/rootfs/buildroot/buildroot-2020.02.6/output/build/buildroot-config/auto.conf: FORCE
 endif
-ifneq "$(BR2_VERSION_FULL)" "-g9374e79c4-dirty"
+ifneq "$(BR2_VERSION_FULL)" "-ge2a414abd-dirty"
 /home/share/samba/embed_linux/embeded_linux/sources/rootfs/buildroot/buildroot-2020.02.6/output/build/buildroot-config/auto.conf: FORCE
 endif
 
