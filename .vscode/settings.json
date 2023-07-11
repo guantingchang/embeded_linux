@@ -2,6 +2,9 @@
 	"git.ignoreLimitWarning": true,
 	"files.associations": {
 		"complex": "c",
-		"fcntl.h": "c"
+		"fcntl.h": "c",
+		"bitset": "c",
+		"set": "c",
+		"*.inc": "c"
 	}
 }
