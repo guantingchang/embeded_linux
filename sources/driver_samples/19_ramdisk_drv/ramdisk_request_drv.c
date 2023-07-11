@@ -32,62 +32,6 @@ struct ramdisk_dev {
 
 struct ramdisk_dev *ramdisk = NULL;
 
-static int __init ramdisk_init(void)
-{
-	int ret = 0;
-	struct ramdisk_dev *dev;
-	printk("ramdisk init\r\n");
-
-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-	if(dev == NULL){
-		return -ENOMEM;
-	}
-
-	dev->ramdiskbuf = kmalloc(RAMDISK_SIZE, GFP_KERNEL);
-	if(dev->ramdiskbuf == NULL){
-		printk(KERN_WARNING "dev->ramdiskbuf:vmalloc failure.\n");
-		return -ENOMEM;
-	}
-	ramdisk = dev;
-	spin_lock_init(&dev->lock);
-	dev->major = register_blkdev(0, RAMDISK_NAME);
-	if(dev->major < 0){
-		goto register_blkdev_fail;
-	}
-	dev->queue = create_req_queue(dev);
-	if(dev->queue == NULL){
-		goto create_queue_fail;
-	}
-	ret = create_req_gendisk(dev);
-	if(ret < 0){
-		goto create_gendisk_fail;
-	}
-	return 0;
-create_gendisk_fail:
-	blk_cleanup_queue(dev->queue);
-	blk_mq_free_tag_set(&dev->tag_set);
-create_queue_fail:
-	unregister_blkdev(dev->major, RAMDISK_NAME);	
-register_blkdev_fail:
-	kfree(dev->ramdiskbuf);
-	kfree(dev);
-	return -ENOMEM;
-}
-
-static void __exit ramdisk_exit(void)
-{
-	printk("ramdisk exit\r\n");
-	del_gendisk(ramdisk->gendisk);
-	put_disk(ramdisk->gendisk);
-
-	blk_cleanup_queue(ramdisk->queue);
-	blk_mq_free_tag_set(&ramdisk->tag_set);
-
-	unregister_blkdev(ramdisk->major, RAMDISK_NAME);	
-
-	kfree(ramdisk->ramdiskbuf);
-	kfree(ramdisk);
-}
 
 int ramdisk_open(struct block_device *dev, fmode_t mode)
 {
@@ -150,7 +94,7 @@ static struct blk_mq_ops mq_ops = {
 static struct request_queue *create_req_queue(struct ramdisk_dev *dev)
 {
 	struct request_queue *queue;
-	struct blk_mq_alloc_tag_set *set = &dev->tag_set;
+	struct blk_mq_tag_set *set = &dev->tag_set;
 
 	#if 0
 		queue = blk_mq_init_sq_queue(set, &mq_ops, 2, BLK_MQ_F_SHOULD_MERGE);
@@ -158,7 +102,7 @@ static struct request_queue *create_req_queue(struct ramdisk_dev *dev)
 		int ret;
 		memset(set, 0, sizeof(*set));
 		set->ops = &mq_ops;
-		set->nr_hw_queue =2;
+		set->nr_hw_queues =2;
 		set->queue_depth = 2;
 		set->numa_node = NUMA_NO_NODE;
 		set->flags = BLK_MQ_F_SHOULD_MERGE;
@@ -178,7 +122,7 @@ static struct request_queue *create_req_queue(struct ramdisk_dev *dev)
 
 }
 
-static int create_req_gendisk(struct ramdisk_dev *dev)
+static int create_req_gendisk(struct ramdisk_dev *set)
 {
 	struct ramdisk_dev *dev = set;
 
@@ -196,3 +140,67 @@ static int create_req_gendisk(struct ramdisk_dev *dev)
 	add_disk(dev->gendisk);
 	return 0;
 }
+
+
+static int __init ramdisk_init(void)
+{
+	int ret = 0;
+	struct ramdisk_dev *dev;
+	printk("ramdisk init\r\n");
+
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+	if(dev == NULL){
+		return -ENOMEM;
+	}
+
+	dev->ramdiskbuf = kmalloc(RAMDISK_SIZE, GFP_KERNEL);
+	if(dev->ramdiskbuf == NULL){
+		printk(KERN_WARNING "dev->ramdiskbuf:vmalloc failure.\n");
+		return -ENOMEM;
+	}
+	ramdisk = dev;
+	spin_lock_init(&dev->lock);
+	dev->major = register_blkdev(0, RAMDISK_NAME);
+	if(dev->major < 0){
+		goto register_blkdev_fail;
+	}
+	dev->queue = create_req_queue(dev);
+	if(dev->queue == NULL){
+		goto create_queue_fail;
+	}
+	ret = create_req_gendisk(dev);
+	if(ret < 0){
+		goto create_gendisk_fail;
+	}
+	return 0;
+create_gendisk_fail:
+	blk_cleanup_queue(dev->queue);
+	blk_mq_free_tag_set(&dev->tag_set);
+create_queue_fail:
+	unregister_blkdev(dev->major, RAMDISK_NAME);	
+register_blkdev_fail:
+	kfree(dev->ramdiskbuf);
+	kfree(dev);
+	return -ENOMEM;
+}
+
+static void __exit ramdisk_exit(void)
+{
+	printk("ramdisk exit\r\n");
+	del_gendisk(ramdisk->gendisk);
+	put_disk(ramdisk->gendisk);
+
+	blk_cleanup_queue(ramdisk->queue);
+	blk_mq_free_tag_set(&ramdisk->tag_set);
+
+	unregister_blkdev(ramdisk->major, RAMDISK_NAME);	
+
+	kfree(ramdisk->ramdiskbuf);
+	kfree(ramdisk);
+}
+
+module_init(ramdisk_init);
+module_exit(ramdisk_exit);
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("GTC");
+MODULE_INFO(intree, "Y");
