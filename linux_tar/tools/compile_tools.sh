@@ -32,3 +32,5 @@ sudo apt-get install libncurses5-dev
 sudo apt-get install lzop
 sudo apt-get install libssl-dev
 sudo apt-get install u-boot-tools
+#linux 开发工具
+sudo apt-get install iperf3
