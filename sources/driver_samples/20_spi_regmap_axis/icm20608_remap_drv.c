@@ -19,6 +19,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include "icm20608_drv.h"
+#include <linux/regmap.h>
 
 #define ICM20608_CNT  1
 #define ICM20608_NAME "icm20608"
@@ -40,92 +41,19 @@ struct icm20608_dev {
 	struct regmap *regmap;
 	struct regmap_config regmap_config;
 };
-//实测有功能bug
-static int icm20608_read_regs(struct icm20608_dev *dev, u8 reg, void *buf, int len) 
-{
-	int ret = -1;
-	unsigned char txdata[1];
-	unsigned char *rxdata;
-	struct spi_message msg;
-	struct spi_transfer *transfer;
-	struct spi_device *spi = (struct spi_device *)dev->spi;
-
-	transfer = kzalloc(sizeof(struct spi_transfer), GFP_KERNEL);
-	if(transfer == NULL){
-		return -ENOMEM;
-	}
-	rxdata = kzalloc(sizeof(char)* len, GFP_KERNEL);
-	if(rxdata == NULL){
-		goto out1;
-	}
-
-	txdata[0] = reg | 0x80;
-	transfer->tx_buf = txdata;
-	transfer->rx_buf = rxdata;
-	transfer->len = len+1;
-	spi_message_init(&msg);
-	spi_message_add_tail(transfer, &msg);
-	ret = spi_sync(spi, &msg);
-	if(ret){
-		goto out2;
-	}
-	memcpy(buf,rxdata+1, len);
-out2:
-	kfree(rxdata);
-out1:
-	kfree(transfer);
-	return ret;
-}
-
-static s32 icm20608_write_regs(struct icm20608_dev *dev, u8 reg, u8 *buf, u8 len) 
-{
-	int ret = -1;
-	unsigned char *txdata;
-	struct spi_message msg;
-	struct spi_transfer *transfer;
-	struct spi_device *spi = (struct spi_device *)dev->spi;
-	transfer = kzalloc(sizeof(struct spi_transfer), GFP_KERNEL);
-	if(transfer == NULL){
-		return -ENOMEM;
-	}
-
-	txdata = kzalloc(sizeof(char)+len, GFP_KERNEL);
-	if(txdata == NULL){
-		goto out1;
-	}
-
-	*txdata = reg & ~0x80;
-	memcpy(txdata+1,buf,len);
-	transfer->tx_buf = txdata;
-	transfer ->len = len +1;
-	spi_message_init(&msg);
-	spi_message_add_tail(transfer, &msg);
-	ret = spi_sync(spi, &msg);
-	if(ret!=0){
-		goto out2;
-	}
-out2:
-	kfree(txdata);
-out1:
-	kfree(transfer);
-	return ret;	
-}
 
 static unsigned char icm20608_read_one_reg(struct icm20608_dev *dev, u8 reg)
 {
-	u8 data = 0;
-	// icm20608_read_regs(dev,reg, &data,1);
+	unsigned int data = 0;
 	u8 ret = 0;
+
 	ret = regmap_read(dev->regmap, reg, &data);
 	return data;
 }
 
 static void icm20608_write_one_reg(struct icm20608_dev *dev,u8 reg, u8 data)
 {
-	u8 buf = 0;
-	buf = data;
-	//icm20608_write_regs(dev,reg,&buf ,1);
-	regmap_write(dev->regmap, reg, value);
+	regmap_write(dev->regmap, reg, data);
 }
 
 void icm20608_readdata(struct icm20608_dev *dev)
@@ -210,12 +138,12 @@ static int icm20608_probe(struct spi_device *spi)
 		return -ENOMEM;
 	}
 
-	icm20608_dev->regmap_config.reg_bits = 8;
-	icm20608_dev->regmap_config.val_bits = 8;
-	icm20608_dev->regmap_config.read_flag_mask = 0x80;
-	icm20608_dev->regmap = regmap_init_spi(spi, &icm20608dev->regmap_config);
-	if(IS_ERR(icm20608dev->regmap)){
-		return PTR_ERR(icm20608dev->regmap);
+	icm20608_device->regmap_config.reg_bits = 8;
+	icm20608_device->regmap_config.val_bits = 8;
+	icm20608_device->regmap_config.read_flag_mask = 0x80;
+	icm20608_device->regmap = regmap_init_spi(spi, &icm20608_device->regmap_config);
+	if(IS_ERR(icm20608_device->regmap)){
+		return PTR_ERR(icm20608_device->regmap);
 	}
 
 	ret = alloc_chrdev_region(&icm20608_device->dev_id, 0, ICM20608_CNT, ICM20608_NAME);
@@ -249,7 +177,7 @@ del_cdev:
 	cdev_del(&icm20608_device->cdev);
 del_unregister:
 	unregister_chrdev_region(icm20608_device->dev_id, ICM20608_CNT);
-	regmap_exit(icm20608dev->regmap);
+	regmap_exit(icm20608_device->regmap);
 	return -EIO;
 }
 
